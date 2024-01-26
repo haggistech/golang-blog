@@ -10,7 +10,7 @@ func connect() (*sql.DB, error) {
 	}
 
 	sqlStmt := `
-	create table if not exists articles (id integer not null primary key autoincrement, title text, content text);
+	create table if not exists articles (id integer not null primary key autoincrement, title text, content text, date text);
 	`
 
 	_, err = db.Exec(sqlStmt)
@@ -22,13 +22,13 @@ func connect() (*sql.DB, error) {
 }
 
 func dbCreateArticle(article *Article) error {
-	query, err := db.Prepare("insert into articles(title,content) values (?,?)")
+	query, err := db.Prepare("insert into articles(title,content,date) values (?,?,?)")
 	defer query.Close()
 
 	if err != nil {
 		return err
 	}
-	_, err = query.Exec(article.Title, article.Content)
+	_, err = query.Exec(article.Title, article.Content, article.Date)
 
 	if err != nil {
 		return err
@@ -38,7 +38,7 @@ func dbCreateArticle(article *Article) error {
 }
 
 func dbGetAllArticles() ([]*Article, error) {
-	query, err := db.Prepare("select id, title, content from articles")
+	query, err := db.Prepare("select id, title, content, date from articles")
 	defer query.Close()
 
 	if err != nil {
@@ -56,6 +56,7 @@ func dbGetAllArticles() ([]*Article, error) {
 			&data.ID,
 			&data.Title,
 			&data.Content,
+			&data.Date,
 		)
 		if err != nil {
 			return nil, err
@@ -67,7 +68,7 @@ func dbGetAllArticles() ([]*Article, error) {
 }
 
 func dbGetArticle(articleID string) (*Article, error) {
-	query, err := db.Prepare("select id, title, content from articles where id = ?")
+	query, err := db.Prepare("select id, title, content, date from articles where id = ?")
 	defer query.Close()
 
 	if err != nil {
@@ -85,7 +86,7 @@ func dbGetArticle(articleID string) (*Article, error) {
 }
 
 func dbUpdateArticle(id string, article *Article) error {
-	query, err := db.Prepare("update articles set (title, content) = (?,?) where id=?")
+	query, err := db.Prepare("update articles set (title, content, date) = (?,?,?) where id=?")
 	defer query.Close()
 
 	if err != nil {

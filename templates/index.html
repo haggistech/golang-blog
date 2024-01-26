@@ -6,7 +6,8 @@ Nothing to see here
 {{end}}
 {{range .}}
 <div>
-    <a href="/articles/{{.ID}}">{{.Title}}</a>
+    <a href="/articles/{{.ID}}">{{.Title}}</a> - {{.Date}}
+    {{.Content}}
 </div>
 {{end}}
 <p>

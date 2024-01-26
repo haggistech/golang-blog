@@ -24,6 +24,7 @@ type Article struct {
 	ID      int           `json:"id"`
 	Title   string        `json:"title"`
 	Content template.HTML `json:"content"`
+	Date    string        `json:"date"`
 }
 
 func catch(err error) {
@@ -172,15 +173,19 @@ func NewArticle(w http.ResponseWriter, r *http.Request) {
 func CreateArticle(w http.ResponseWriter, r *http.Request) {
 	title := r.FormValue("title")
 	content := r.FormValue("content")
+	date := GetDate()
 	article := &Article{
 		Title:   title,
 		Content: template.HTML(content),
+		Date:    date,
 	}
 
 	err := dbCreateArticle(article)
 	catch(err)
 	http.Redirect(w, r, "/", http.StatusFound)
 }
+
+
 
 func GetArticle(w http.ResponseWriter, r *http.Request) {
 	article := r.Context().Value("article").(*Article)
@@ -218,4 +223,9 @@ func DeleteArticle(w http.ResponseWriter, r *http.Request) {
 	catch(err)
 
 	http.Redirect(w, r, "/", http.StatusFound)
+}
+
+func GetDate() string {
+	timeObj := time.Now()
+	return timeObj.Format("January 2, 2006 @ 15:04")
 }
