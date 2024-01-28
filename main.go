@@ -55,6 +55,7 @@ func main() {
 	router.Get("/", GetAllArticles)
 	router.Post("/upload", UploadHandler) // Add this
 	router.Get("/images/*", ServeImages)  // Add this
+	router.Get("/css/*", ServeCss)  // Add this
 	router.Route("/articles", func(r chi.Router) {
 		r.Get("/", NewArticle)
 		r.Post("/", CreateArticle)
@@ -116,6 +117,12 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	w.Write(response)
+}
+
+func ServeCss(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(r.URL)
+	fs := http.StripPrefix("/css/", http.FileServer(http.Dir("./css")))
+	fs.ServeHTTP(w, r)
 }
 
 func ServeImages(w http.ResponseWriter, r *http.Request) {

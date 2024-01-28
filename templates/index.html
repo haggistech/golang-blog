@@ -1,11 +1,14 @@
 {{define "title"}}All articles{{end}}
-{{define "scripts"}}{{end}}
+{{define "scripts"}}
+<link rel="stylesheet" href="/css/styles.css">
+{{end}}
 {{define "body"}}
 {{if eq (len .) 0}}
 Nothing to see here
 {{end}}
 {{range .}}
-<div>
+<div  class="card">
+    <div class="container">
     <h3><a href="/articles/{{.ID}}">{{.Title}}</a></h3>
     <p class="date">
         Posted on {{.Date}}
@@ -14,7 +17,7 @@ Nothing to see here
         <p>{{.Content}}</p>
         <p><a href="/articles/{{.ID}}">Read More</a></p>
     </div>
-
+    </div>
     
 </div>
 {{end}}

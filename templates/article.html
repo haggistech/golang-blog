@@ -1,15 +1,21 @@
 {{define "title"}}{{.Title}}{{end}}
-{{define "scripts"}}{{end}}
+{{define "scripts"}}
+<link rel="stylesheet" href="/css/styles.css">
+{{end}}
 {{define "body"}}
+<div  class="card">
+  <div class="container">
 <h1>{{.Title}} </h1>
 <div>
   {{.Content}}
 </div>
-<div>
+
+
   <a href="/articles/{{.ID}}/edit">Edit</a>
   <form action="/articles/{{.ID}}" method="post">
     <input type="hidden" name="_method" value="DELETE">
     <button type="submit">Delete</button>
   </form>
+</div>
 </div>
 {{end}}
