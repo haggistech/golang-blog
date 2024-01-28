@@ -76,7 +76,7 @@ func dbGetArticle(articleID string) (*Article, error) {
 	}
 	result := query.QueryRow(articleID)
 	data := new(Article)
-	err = result.Scan(&data.ID, &data.Title, &data.Content)
+	err = result.Scan(&data.ID, &data.Title, &data.Content, &data.Date)
 
 	if err != nil {
 		return nil, err
@@ -86,7 +86,7 @@ func dbGetArticle(articleID string) (*Article, error) {
 }
 
 func dbUpdateArticle(id string, article *Article) error {
-	query, err := db.Prepare("update articles set (title, content, date) = (?,?,?) where id=?")
+	query, err := db.Prepare("update articles set (title, content) = (?,?) where id=?")
 	defer query.Close()
 
 	if err != nil {

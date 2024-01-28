@@ -6,8 +6,16 @@ Nothing to see here
 {{end}}
 {{range .}}
 <div>
-    <a href="/articles/{{.ID}}">{{.Title}}</a> - {{.Date}}
-    {{.Content}}
+    <h3><a href="/articles/{{.ID}}">{{.Title}}</a></h3>
+    <p class="date">
+        Posted on {{.Date}}
+    </p>
+    <div class="summary">
+        <p>{{.Content}}</p>
+        <p><a href="/articles/{{.ID}}">Read More</a></p>
+    </div>
+
+    
 </div>
 {{end}}
 <p>
