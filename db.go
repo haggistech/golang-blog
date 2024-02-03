@@ -38,7 +38,7 @@ func dbCreateArticle(article *Article) error {
 }
 
 func dbGetAllArticles() ([]*Article, error) {
-	query, err := db.Prepare("select id, title, content, date from articles")
+	query, err := db.Prepare("select id, title, content, date from articles order by id desc")
 	defer query.Close()
 
 	if err != nil {
