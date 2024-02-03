@@ -12,8 +12,11 @@ func connect() (*sql.DB, error) {
 	sqlStmt := `
 	create table if not exists articles (id integer not null primary key autoincrement, title text, content text, date text);
 	`
-
+	sqlStmtCmt := `
+	create table if not exists comments (id integer not null primary key autoincrement, articleid int, content text, date text);
+	`
 	_, err = db.Exec(sqlStmt)
+	_, err = db.Exec(sqlStmtCmt)
 	if err != nil {
 		return nil, err
 	}
@@ -69,6 +72,7 @@ func dbGetAllArticles() ([]*Article, error) {
 
 func dbGetArticle(articleID string) (*Article, error) {
 	query, err := db.Prepare("select id, title, content, date from articles where id = ?")
+
 	defer query.Close()
 
 	if err != nil {
@@ -115,4 +119,35 @@ func dbDeleteArticle(id string) error {
 	}
 
 	return nil
+}
+
+
+func dbGetComments(articleID string) ([]*Comments, error) {
+	query, err := db.Prepare("select id, articleid, content, date from comments where articleid=?")
+	defer query.Close()
+
+	if err != nil {
+		return nil, err
+	}
+	result, err := query.Query()
+
+	if err != nil {
+		return nil, err
+	}
+	comments := make([]*Comments, 0)
+	for result.Next() {
+		data := new(Comments)
+		err := result.Scan(
+			&data.ID,
+			&data.ArticleID,
+			&data.Content,
+			&data.Date,
+		)
+		if err != nil {
+			return nil, err
+		}
+		comments = append(comments, data)
+	}
+
+	return comments, nil
 }

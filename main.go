@@ -27,6 +27,13 @@ type Article struct {
 	Date    string        `json:"date"`
 }
 
+type Comments struct {
+	ID        int           `json:"id"`
+	ArticleID int           `json:"articleid"`
+	Content   template.HTML `json:"content"`
+	Date      string        `json:"date"`
+}
+
 func catch(err error) {
 	if err != nil {
 		fmt.Println(err)
@@ -55,13 +62,15 @@ func main() {
 	router.Get("/", GetAllArticles)
 	router.Post("/upload", UploadHandler) // Add this
 	router.Get("/images/*", ServeImages)  // Add this
-	router.Get("/css/*", ServeCss)  // Add this
+	router.Get("/css/*", ServeCss)        // Add this
 	router.Route("/articles", func(r chi.Router) {
 		r.Get("/", NewArticle)
 		r.Post("/", CreateArticle)
 		r.Route("/{articleID}", func(r chi.Router) {
 			r.Use(ArticleCtx)
+			r.Use(CommentCtx)
 			r.Get("/", GetArticle)       // GET /articles/1234
+			r.Get("/comments", GetComments)      // GET /articles/1234/comments
 			r.Put("/", UpdateArticle)    // PUT /articles/1234
 			r.Delete("/", DeleteArticle) // DELETE /articles/1234
 			r.Get("/edit", EditArticle)  // GET /articles/1234/edit
@@ -159,6 +168,22 @@ func ArticleCtx(next http.Handler) http.Handler {
 		}
 		ctx := context.WithValue(r.Context(), "article", article)
 		next.ServeHTTP(w, r.WithContext(ctx))
+
+	})
+}
+
+func CommentCtx(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		articleID := chi.URLParam(r, "articleID")
+		comments, err := dbGetComments(articleID)
+		if err != nil {
+			fmt.Println(err)
+			http.Error(w, http.StatusText(404), 404)
+			return
+		}
+		ctx := context.WithValue(r.Context(), "comments", comments)
+		next.ServeHTTP(w, r.WithContext(ctx))
+
 	})
 }
 
@@ -168,6 +193,13 @@ func GetAllArticles(w http.ResponseWriter, r *http.Request) {
 
 	t, _ := template.ParseFiles("templates/base.html", "templates/index.html")
 	err = t.Execute(w, articles)
+	catch(err)
+}
+
+func GetComments(w http.ResponseWriter, r *http.Request) {
+	comments := r.Context().Value("comments").(*Comments)
+	t, _ := template.ParseFiles("templates/base.html", "templates/article.html")
+	err := t.Execute(w, comments)
 	catch(err)
 }
 
@@ -191,8 +223,6 @@ func CreateArticle(w http.ResponseWriter, r *http.Request) {
 	catch(err)
 	http.Redirect(w, r, "/", http.StatusFound)
 }
-
-
 
 func GetArticle(w http.ResponseWriter, r *http.Request) {
 	article := r.Context().Value("article").(*Article)
