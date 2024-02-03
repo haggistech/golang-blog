@@ -13,7 +13,9 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -235,4 +237,18 @@ func DeleteArticle(w http.ResponseWriter, r *http.Request) {
 func GetDate() string {
 	timeObj := time.Now()
 	return timeObj.Format("January 2, 2006 @ 15:04")
+}
+
+func (article *Article) GetExcerpt() string {
+	text := string(article.Content)
+	strip := regexp.MustCompile("\b+")
+	text = strings.ReplaceAll(text, "<p>", "")
+	text = strings.ReplaceAll(text, "</p>", " ")
+	text = strip.ReplaceAllString(text, " ")
+	words := strings.Split(text, " ")
+
+	if len(words) > 50 {
+		return strings.Join(words[:50], " ") + "..."
+	}
+	return strings.TrimSuffix(strings.Join(words, " "), " ")
 }

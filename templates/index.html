@@ -7,19 +7,19 @@
 Nothing to see here
 {{end}}
 {{range .}}
-<div  class="card">
-    <div class="container">
-    <h3><a href="/articles/{{.ID}}">{{.Title}}</a></h3>
-    <p class="date">
-        Posted on {{.Date}}
-    </p>
-    <div class="summary">
-        <p>{{.Content}}</p>
-        <p><a href="/articles/{{.ID}}">Read More</a></p>
+
+<div class="card" style="width: 80rem;">
+    <img class="card-img-top img-fluid" src="images/noimage.png" alt="Card image cap">
+    <div class="card-body">
+        <h5 class="card-title">{{.Title}}</h5>
+        <h8 class="card-title">{{.Date}}</h8>
+        <p class="card-text">{{.GetExcerpt}}</p>
+        <a href="/articles/{{.ID}}" class="btn btn-primary">Read More</a>
     </div>
-    </div>
-    
 </div>
+
+
+<br />
 {{end}}
 <p>
     <a href="/articles">Create new article</a>
