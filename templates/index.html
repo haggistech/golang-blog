@@ -9,7 +9,7 @@ Nothing to see here
 {{range .}}
 
 <div class="card" style="width: 80rem;">
-    <img class="card-img-top img-fluid" src="images/noimage.png" alt="Card image cap">
+    <img class="card-img-top img-fluid" src="{{.Image}}" alt="Card image cap">
     <div class="card-body">
         <h5 class="card-title">{{.Title}}</h5>
         <h8 class="card-title">{{.Date}}</h8>
@@ -21,8 +21,4 @@ Nothing to see here
 
 <br />
 {{end}}
-<p>
-    <a href="/articles">Create new article</a>
-
-</p>
 {{end}}

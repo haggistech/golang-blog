@@ -26,6 +26,7 @@ var db *sql.DB
 type Article struct {
 	ID      int           `json:"id"`
 	Title   string        `json:"title"`
+	Image   string        `json:"image"`
 	Content template.HTML `json:"content"`
 	Date    string        `json:"date"`
 }
@@ -188,10 +189,12 @@ func NewArticle(w http.ResponseWriter, r *http.Request) {
 
 func CreateArticle(w http.ResponseWriter, r *http.Request) {
 	title := r.FormValue("title")
+	image := r.FormValue("image")
 	content := r.FormValue("content")
 	date := GetDate()
 	article := &Article{
 		Title:   title,
+		Image:   image,
 		Content: template.HTML(content),
 		Date:    date,
 	}
@@ -253,6 +256,8 @@ func (article *Article) GetExcerpt() string {
 	strip := regexp.MustCompile("\b+")
 	text = strings.ReplaceAll(text, "<p>", "")
 	text = strings.ReplaceAll(text, "</p>", " ")
+	text = strings.ReplaceAll(text, "<h3>", "")
+	text = strings.ReplaceAll(text, "</h3>", " ")
 	text = strip.ReplaceAllString(text, " ")
 	words := strings.Split(text, " ")
 
@@ -261,3 +266,4 @@ func (article *Article) GetExcerpt() string {
 	}
 	return strings.TrimSuffix(strings.Join(words, " "), " ")
 }
+
