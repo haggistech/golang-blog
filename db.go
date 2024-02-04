@@ -10,7 +10,7 @@ func connect() (*sql.DB, error) {
 	}
 
 	sqlStmt := `
-	create table if not exists articles (id integer not null primary key autoincrement, title text, content text, date text);
+	create table if not exists articles (id integer not null primary key autoincrement, title text, image text, content text, date text);
 	`
 
 	_, err = db.Exec(sqlStmt)
@@ -22,13 +22,13 @@ func connect() (*sql.DB, error) {
 }
 
 func dbCreateArticle(article *Article) error {
-	query, err := db.Prepare("insert into articles(title,content,date) values (?,?,?)")
+	query, err := db.Prepare("insert into articles(title,image,content,date) values (?,?,?,?)")
 	defer query.Close()
 
 	if err != nil {
 		return err
 	}
-	_, err = query.Exec(article.Title, article.Content, article.Date)
+	_, err = query.Exec(article.Title, article.Image, article.Content, article.Date)
 
 	if err != nil {
 		return err
@@ -38,7 +38,7 @@ func dbCreateArticle(article *Article) error {
 }
 
 func dbGetAllArticles() ([]*Article, error) {
-	query, err := db.Prepare("select id, title, content, date from articles order by id desc")
+	query, err := db.Prepare("select id, title, image, content, date from articles order by id desc")
 	defer query.Close()
 
 	if err != nil {
@@ -55,6 +55,7 @@ func dbGetAllArticles() ([]*Article, error) {
 		err := result.Scan(
 			&data.ID,
 			&data.Title,
+			&data.Image,
 			&data.Content,
 			&data.Date,
 		)
@@ -68,7 +69,7 @@ func dbGetAllArticles() ([]*Article, error) {
 }
 
 func dbGetArticle(articleID string) (*Article, error) {
-	query, err := db.Prepare("select id, title, content, date from articles where id = ?")
+	query, err := db.Prepare("select id, title, image, content, date from articles where id = ?")
 	defer query.Close()
 
 	if err != nil {
@@ -76,7 +77,7 @@ func dbGetArticle(articleID string) (*Article, error) {
 	}
 	result := query.QueryRow(articleID)
 	data := new(Article)
-	err = result.Scan(&data.ID, &data.Title, &data.Content, &data.Date)
+	err = result.Scan(&data.ID, &data.Title, &data.Image,&data.Content, &data.Date)
 
 	if err != nil {
 		return nil, err
@@ -86,13 +87,13 @@ func dbGetArticle(articleID string) (*Article, error) {
 }
 
 func dbUpdateArticle(id string, article *Article) error {
-	query, err := db.Prepare("update articles set (title, content) = (?,?) where id=?")
+	query, err := db.Prepare("update articles set (title, image, content) = (?,?,?) where id=?")
 	defer query.Close()
 
 	if err != nil {
 		return err
 	}
-	_, err = query.Exec(article.Title, article.Content, id)
+	_, err = query.Exec(article.Title, article.Image, article.Content, id)
 
 	if err != nil {
 		return err
